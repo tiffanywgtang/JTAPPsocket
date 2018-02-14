@@ -1,46 +1,34 @@
-const server = require('http').Server();
-const port = process.env.PORT || 10001;
+const port=process.env.PORT || 10002;
+const server = require("http").Server();
 
-var io = require('socket.io')(server);
+var io =require("socket.io")(server);
 
-var names = [];
-var allmsgs= [];
+var allUsers = [];
 
 io.on("connection", function(socket){
-   console.log("user connected"); 
+    console.log("connet");
+    allUsers.push(socket.id);
+    console.log(allUsers);
     
-    socket.on("uName", function(data){
-        console.log("username sent = " +data);
-        names.push(data);
-        io.emit("names", names);
-        
-    });
+    socket.emit("yourid", socket.id);
     
-    socket.on("msg", function(data){
-        console.log("msg sent = " +data);
-        allmsgs.push(data);
-        io.emit("allmsgs", allmsgs);
-    });
+    io.emit("userJoined", allUsers);
+    
+    socket.on("mymove", function(data){
+        socket.broadcast.emit("newmove", data)
+    })
     
     socket.on("disconnect", function(){
-        var index = names.indexOf(socket.id);
-        names.splice(index, 1);
-        io.emit("names", names);
-        console.log("user has disconnected");
+      var index = allUsers.indexOf(socket.id);
+        allUsers.splice(index, 1);
+        io.emit("userJoined", allUsers);
     })
 });
 
-server.listen(port,(err)=>{
+server.listen(port, (err)=>{
     if(err){
-        
-        console.log("error: " +err);
+        console.log(err);
         return false;
     }
-    
-    console.log("socket port is running");
+    console.log("Port Running");
 })
-
-
-
-
-
