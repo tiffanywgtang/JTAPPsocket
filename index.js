@@ -8,6 +8,7 @@ var allmsgs= [];
 
 io.on("connection", function(socket){
    console.log("user connected"); 
+    console.log(socket.id);
     
     socket.on("uName", function(data){
         console.log("username sent = " +data);
@@ -27,6 +28,7 @@ io.on("connection", function(socket){
         names.splice(index, 1);
         io.emit("names", names);
         console.log("user has disconnected");
+        console.log(socket.id);
     })
 });
 
