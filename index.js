@@ -30,6 +30,7 @@ io.on("connection", function(socket){
         console.log("user has disconnected");
         console.log(socket.id);
     })
+    io.emit("allmsgs", allmsgs);
 });
 
 server.listen(port,(err)=>{
@@ -41,6 +42,7 @@ server.listen(port,(err)=>{
     
     console.log("socket port is running");
 })
+
 
 
 
