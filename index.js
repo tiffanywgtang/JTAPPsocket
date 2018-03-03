@@ -23,24 +23,8 @@ io.on("connection", function(socket){
         allstickers.push(data);
         io.emit("newSticker", allstickers);
     })
-    
-    socket.on("joinRoom", function(data){
-        socket.join(data);
-        socket.myRoom = data;
-        socket.emit("yourid", socket.id);
-         
-            if(!allUsers[data]){
-                allUsers[data]=[];
-                allstickers[data]=[];
-            }
 
-            if(!allstickers[data]){
-                allstickers[data]=[];
-            }
-        allUsers[data].push(socket.id);
-        io.to(data).emit("userJoined", allUsers[data]);
-        io.to(data).emit("newSticker", allstickers[data]);
-    })
+    io.emit("newSticker", allstickers);
     
     socket.on("disconnect", function(){
       var index = allUsers.indexOf(socket.id);
@@ -56,3 +40,4 @@ server.listen(port, (err)=>{
     }
     console.log("Port Running");
 })
+
