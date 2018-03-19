@@ -1,50 +1,54 @@
-const server = require('http').Server();
-const port = process.env.PORT || 10001;
+const port = process.env.PORT || 10004;
+const server = require("http").Server();
 
-var io = require('socket.io')(server);
+var io = require("socket.io")(server);
 
-var names = [];
-var allmsgs= [];
+var allplayers = [];
+var P1score = 0;
+var P2score = 0;
 
 io.on("connection", function(socket){
-   console.log("user connected"); 
-    console.log(socket.id);
     
-    socket.on("uName", function(data){
-        console.log("username sent = " +data);
-        names.push(data);
-        io.emit("names", names);
+    socket.on("joingame", function(data){
+        console.log("joining game", data);
         
+        socket.join(data);
+        socket.myPlayer = data;
+    
     });
     
-    socket.on("msg", function(data){
-        console.log("msg sent = " +data);
-        allmsgs.push(data);
-        io.emit("allmsgs", allmsgs);
-    });
+    socket.on("p1score", function(data){
+        console.log("Player one score:", data)
+        P1score = data;
+        socket.broadcast.emit("p1Score", P1score);
+    })
+    
+    socket.on("p2score", function(data){
+        console.log("Player two score:", data)
+        P2score = data;
+    
+        socket.broadcast.emit("p2Score", P2score);
+    })
+    
+    console.log("connect");
+    allplayers.push(socket.id);
+    console.log(allplayers);
+    
+    socket.emit("yourid", socket.id);
+    
+    io.emit("userjoined", allplayers);
     
     socket.on("disconnect", function(){
-        var index = names.indexOf(socket.id);
-        names.splice(index, 1);
-        io.emit("names", names);
-        console.log("user has disconnected");
-        console.log(socket.id);
+        var index = allplayers.indexOf(socket.id);
+        allplayers.splice(index, 1);
+        io.emit("userjoined", allplayers);
     })
-    io.emit("allmsgs", allmsgs);
 });
 
-server.listen(port,(err)=>{
-    if(err){
-        
-        console.log("error: " +err);
-        return false;
-    }
-    
-    console.log("socket port is running");
+server.listen(port, (err)=>{
+              if(err){
+    console.log(err);
+    return false;
+}
+console.log("Port is running");
 })
-
-
-
-
-
-
