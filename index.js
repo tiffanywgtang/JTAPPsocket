@@ -3,9 +3,10 @@ const port = process.env.PORT || 10003;
 
 var io = require('socket.io')(server);
 
-var Qobj=[];
+var Qobj = [];
 var names = [];
-var playerScore=0;
+var playerScore = 0;
+var oppPlayer = [];
 
 io.on("connection", function(socket){
    console.log("user connected"); 
@@ -27,16 +28,18 @@ io.on("connection", function(socket){
     
     
     socket.on("playerScore", function(data){
-        socket.player={
+      var player={
             id:socket.id,
             name:data.username,
             playerScore:data.score
         }
+        oppPlayer.push(player);
        
-        console.log("opp score: " +socket.player);
+        console.log("opp score: " +oppPlayer);
+        io.emit("oppScore", oppPlayer);
     });
     
-   io.emit("oppScore", socket.player);
+  
     
     
     socket.on("answerA", function(data){
@@ -65,9 +68,9 @@ io.on("connection", function(socket){
         console.log("Host's answers: "+Qobj[2].A);
         console.log("Player's answers: "+data);
         
-        var msg=0;
+        var msg=false;
        if(data == Qobj[2].A){
-           msg=10;
+           msg=true;
        } 
         socket.emit("resultC", msg);
     }); 
@@ -76,9 +79,9 @@ io.on("connection", function(socket){
         console.log("Host's answers: "+Qobj[3].A);
         console.log("Player's answers: "+data);
         
-        var msg=0;
+        var msg=false;
        if(data == Qobj[3].A){
-           msg=10;
+           msg=true;
        } 
         socket.emit("resultD", msg);
     });
@@ -87,9 +90,9 @@ io.on("connection", function(socket){
         console.log("Host's answers: "+Qobj[4].A);
         console.log("Player's answers: "+data);
         
-        var msg=0;
+        var msg=false;
        if(data == Qobj[4].A){
-           msg=10;
+           msg=true;
        } 
         socket.emit("resultE", msg);
     });
